@@ -4,19 +4,20 @@
 <el-form >
 
   <el-form-item size="mini"
-                error="выы"
+                
   >
-
+<!-- 
     <el-checkbox v-model="organizations.selectAll"> Выбрать все организации
       <el-tooltip class="item" effect="dark" content="Top Left prompts info" placement="top-start">
         <i class="el-icon-info" />
     </el-tooltip> </el-checkbox>
   </el-form-item>
   <el-form-item
-  >
+  > -->
 
+  <div  tabindex="-1" @focusout="organizations.isFocused=false" @focusin="organizations.isFocused=true" >
 
-  <el-input :disabled="organizations.selectAll" placeholder="Поиск организаций" v-model.trim="organizations.searchQuery" @input="organizationsSearchRequest" class="organizations__search-input" >
+  <el-input  :disabled="organizations.selectAll" placeholder="Поиск организаций" v-model.trim="organizations.searchQuery" @input="organizationsSearchRequest" class="organizations__search-input" >
     <el-select :disabled="organizations.selectAll" v-model="organizations.searchBy" slot="prepend" placeholder="Select" >
 
   <el-option v-for="option in organizations.searchByOptions"  :key="option.value" :label="option.label" :value="option.value"></el-option>
@@ -26,7 +27,7 @@
   </el-input>
 
 
-<el-card class="organizations__search-result" v-show="organizations.searchQuery">
+<el-card class="organizations__search-result" :class="{active:organizations.isFocused && organizations.searchQuery }">
 
   <div  v-if="organizations.loading">
     <i class="el-icon-loading"></i> Поиск...
@@ -52,6 +53,11 @@
       </el-tag>
     </div>
 
+
+
+</div>
+
+
   </el-form-item>
 </el-form>
 
@@ -60,10 +66,14 @@
 </template>
 
 <script>
+// import _throttle from 'lodash/debounce';
+
   export default {
+    name:'TagsInput',
     data() {
       return {
         organizations: {
+          isFocused:false,
                 loading: false,
                 selectedArr: [{id: 66633, checked:true,external_id: null, name: "ООО Компания ОмскСантехМетал"},{ "id": 32, "external_id": null, "name": "ПАО АвтоСантехТяжБанк", "checked": true }], // список выбранных организаций
                 searchResultArr: [],
@@ -76,6 +86,7 @@
     },
 
     methods: {
+
      async organizationsSearchRequest () {
 
       try {
@@ -135,6 +146,9 @@ if (!item.checked) {
 
     mounted() {
       this.organizationsSearchRequest ()
+    },
+    created () {
+      // this.agg = _throttle (this.agg,1000)
     }
 
   };
@@ -172,6 +186,16 @@ if (!item.checked) {
       min-width: 120px;
     }
 
+  }
+  &__search-result {
+    opacity: 0;
+    transform: translateY(-1em);
+    transition: all .2s ease-in-out;
+
+    &.active {
+      opacity: 1;
+      transform: translate(0);
+    }
   }
 
 }
